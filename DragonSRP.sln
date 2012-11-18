@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dsrp", "dsrp\dsrp.vcxproj", "{102927FD-0630-4B99-94DF-7002B7EBE336}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ossl", "ossl\ossl.vcxproj", "{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "apps", "apps\apps.vcxproj", "{31AC7030-DBAC-4C14-A5EE-7AEF8300C833}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF} = {8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}
+		{102927FD-0630-4B99-94DF-7002B7EBE336} = {102927FD-0630-4B99-94DF-7002B7EBE336}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{102927FD-0630-4B99-94DF-7002B7EBE336}.Debug|Win32.ActiveCfg = Debug|Win32
+		{102927FD-0630-4B99-94DF-7002B7EBE336}.Debug|Win32.Build.0 = Debug|Win32
+		{102927FD-0630-4B99-94DF-7002B7EBE336}.Release|Win32.ActiveCfg = Release|Win32
+		{102927FD-0630-4B99-94DF-7002B7EBE336}.Release|Win32.Build.0 = Release|Win32
+		{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}.Debug|Win32.Build.0 = Debug|Win32
+		{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}.Release|Win32.ActiveCfg = Release|Win32
+		{8FAAF3BD-6716-43E2-AF72-0BAF7EA45DAF}.Release|Win32.Build.0 = Release|Win32
+		{31AC7030-DBAC-4C14-A5EE-7AEF8300C833}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31AC7030-DBAC-4C14-A5EE-7AEF8300C833}.Debug|Win32.Build.0 = Debug|Win32
+		{31AC7030-DBAC-4C14-A5EE-7AEF8300C833}.Release|Win32.ActiveCfg = Release|Win32
+		{31AC7030-DBAC-4C14-A5EE-7AEF8300C833}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
