@@ -72,8 +72,9 @@ namespace Ossl
 			OsslMathImpl(HashInterface &hashInterface, Ng ngVal);
 			~OsslMathImpl();
 			bytes calculateA(const bytes &aa);
-			void clientChallange(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out);
-			void serverChallange(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, bytes &B_out, bytes &M1_out, bytes &M2_out, bytes &K_out);
+			bytes calculateB(const bytes &verificator, const bytes &bb);
+			void clientChallenge(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out);
+			void serverChallenge(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, const bytes &BB, bytes &M1_out, bytes &M2_out, bytes &K_out);
 			bytes calculateVerificator(const bytes &username, const bytes &password, const bytes &salt);
 			
 			#ifdef DSRP_DANGEROUS_TESTING

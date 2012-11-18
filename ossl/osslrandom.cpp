@@ -50,6 +50,11 @@
 #include <stdlib.h>
 #include <openssl/rand.h>
 
+#ifdef WIN32
+	#pragma comment(lib, "crypt32.lib")
+	#include <Wincrypt.h>
+#endif
+
 #include "dsrp/conversion.hpp"
 #include "osslrandom.hpp"
 
@@ -61,6 +66,20 @@ namespace DragonSRP
 		FILE *fp = 0;
 		unsigned char buff[128];
 
+		// TODO: make Windows Random Generator here
+#ifdef WIN32
+		HCRYPTPROV hCryptProv;
+		if(!CryptAcquireContext(&hCryptProv, NULL, NULL, PROV_RSA_FULL, 0))
+		{   
+			return;
+		}
+		
+		if(!CryptGenRandom(hCryptProv, sizeof(buff), buff))
+		{
+			return;
+		}
+		CryptReleaseContext(hCryptProv, 0);
+#else
 		fp = fopen("/dev/urandom", "r");
         
 		if (fp)
@@ -70,7 +89,7 @@ namespace DragonSRP
 			fclose(fp);
 		}
 		else throw DsrpException("Could not initialize random number generator");
-	
+#endif
 		RAND_seed(buff, sizeof(buff));
 		initOk = true;
 	}

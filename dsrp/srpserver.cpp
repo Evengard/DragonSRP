@@ -47,14 +47,28 @@ namespace DragonSRP
 			
 	}	
 	
+	bytes SrpServer::getB(const bytes &username)
+	{
+		if (bb.size() == 0 || BB.size() == 0)
+		{
+			User usr = lookup.getByName(username); // throws if not found
+			bb = random.getRandom(32); // length of salt, needs to be parametrized!
+			BB = math.calculateB(usr.getVerificator(), bb);
+		}
+		return BB;
+	}
+
 	SrpVerificator SrpServer::getVerificator(const bytes &username, const bytes &AA)
 	{
 		// check status of authentification
 		User usr = lookup.getByName(username); // throws if not found
-		bytes M1, M2, K, B;
-		bytes b = random.getRandom(32); // length of salt, needs to be parametrized!
-		math.serverChallange(username, usr.getSalt(), usr.getVerificator(), AA, b, B, M1, M2, K); // throws on error
-		return SrpVerificator(username, usr.getSalt(), B, M1, M2, K);
+		bytes M1, M2, K;
+		if (bb.size() == 0 || BB.size() == 0)
+		{
+			getB(username);
+		}
+		math.serverChallenge(username, usr.getSalt(), usr.getVerificator(), AA, bb, BB, M1, M2, K); // throws on error
+		return SrpVerificator(username, usr.getSalt(), BB, M1, M2, K);
 	}
 			
 	#ifdef DSRP_DANGEROUS_TESTING
@@ -63,10 +77,13 @@ namespace DragonSRP
 		{
 			// check status of authentification
 			User usr = lookup.getByName(username); // throws if not found
-			bytes M1, M2, K, B;
+			bytes M1, M2, K;
+
+			bb = b;
+			BB = math.calculateB(usr.getVerificator(), bb);
 			
-			math.serverChallange(username, usr.getSalt(), usr.getVerificator(), AA, b, B, M1, M2, K); // throws on error
-			return SrpVerificator(username, usr.getSalt(), B, M1, M2, K);
+			math.serverChallenge(username, usr.getSalt(), usr.getVerificator(), AA, b, BB, M1, M2, K); // throws on error
+			return SrpVerificator(username, usr.getSalt(), BB, M1, M2, K);
 		}
 	#endif
 	

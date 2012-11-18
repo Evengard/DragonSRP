@@ -49,8 +49,9 @@ namespace DragonSRP
 			MathInterface(HashInterface &hashInterface, Ng ngVal);
             virtual ~MathInterface()=0;
 			virtual bytes calculateA(const bytes &aa)=0;
-			virtual void clientChallange(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out)=0;
-			virtual void serverChallange(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, bytes &B_out, bytes &M1_out, bytes &M2_out, bytes &K_out)=0;
+			virtual bytes calculateB(const bytes &verificator, const bytes &bb)=0;
+			virtual void clientChallenge(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out)=0;
+			virtual void serverChallenge(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, const bytes &BB, bytes &M1_out, bytes &M2_out, bytes &K_out)=0;
 			virtual bytes calculateVerificator(const bytes &username, const bytes &password, const bytes &salt)=0;
 		protected:
 			HashInterface &hash;

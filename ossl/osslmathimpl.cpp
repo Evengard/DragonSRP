@@ -117,12 +117,53 @@ namespace Ossl
         
         return A_out;
     }
+
+	bytes OsslMathImpl::calculateB(const bytes &verificator, const bytes &bb)
+	{
+		bytes B_out;
+
+		BIGNUM *v = BN_new();
+		BIGNUM *b = BN_new();
+		BIGNUM *B = BN_new();
+		BIGNUM *tmp1 = BN_new();
+		BIGNUM *tmp2 = BN_new();
+		OsslConversion::bytes2bignum(verificator, v);
+		OsslConversion::bytes2bignum(bb, b);
+
+		if (!BN_is_zero(v))
+		{
+			// Calculate B = k*v + g^b
+			BN_mod_mul(tmp1, k, v, N, ctx);
+			BN_mod_exp(tmp2, g, b, N, ctx);
+			BN_mod_add(B, tmp1, tmp2, N, ctx);
+
+			OsslConversion::bignum2bytes(B, B_out);
+
+		}
+		else
+		{
+			BN_free(v);
+			BN_free(b);
+			BN_free(B);
+			BN_free(tmp1);
+			BN_free(tmp2);
+
+			throw DsrpException("Dsrp:B calculation failed:v is zero.");
+		}
+
+		BN_free(v);
+		BN_free(b);
+		BN_free(B);
+		BN_free(tmp1);
+		BN_free(tmp2);
+		return B_out;
+	}
             
     // u = H(A || B)
     // x = H(salt || H(username || ":" || password)
     // S = (B - k*(g^x)) ^ (a + ux)
     // K = H(S)
-	void OsslMathImpl::clientChallange(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out)
+	void OsslMathImpl::clientChallenge(const bytes &salt, const bytes &aa, const bytes &AA, const bytes &BB, const bytes &username, const bytes &password, bytes &M1_out, bytes &M2_out, bytes &K_out)
 	{   
 		checkNg(); // will throw on error
 		BIGNUM *B = BN_new();
@@ -228,7 +269,7 @@ namespace Ossl
 			
 	}
 	
-	void OsslMathImpl::serverChallange(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, bytes &B_out, bytes &M1_out, bytes &M2_out, bytes &K_out)
+	void OsslMathImpl::serverChallenge(const bytes &username, const bytes &salt, const bytes &verificator, const bytes &AA, const bytes &bb, const bytes &BB, bytes &M1_out, bytes &M2_out, bytes &K_out)
 	{
 		checkNg(); // will throw on error
 		
@@ -245,6 +286,7 @@ namespace Ossl
 
 		OsslConversion::bytes2bignum(AA, A);
 		OsslConversion::bytes2bignum(bb, b);
+		OsslConversion::bytes2bignum(BB, B);
 		OsslConversion::bytes2bignum(verificator, v);
 		
 		// there is neccessary to add the SRP6a security check
@@ -255,13 +297,7 @@ namespace Ossl
 		// I added the v != 0 check
 		if (!BN_is_zero(tmp1) && !BN_is_zero(v))
 		{
-		
-			// Calculate B = k*v + g^b
-			BN_mod_mul(tmp1, k, v, N, ctx);
-			BN_mod_exp(tmp2, g, b, N, ctx);
-			BN_mod_add(B, tmp1, tmp2, N, ctx);
-			OsslConversion::bignum2bytes(B, B_out);
-			
+
 			// Calculate u = H(PAD(A) || PAD(B))
 			bytes cu;
 			
@@ -275,13 +311,13 @@ namespace Ossl
 			}
 			Conversion::append(cu, AA);
 			
-			if (B_out.size() < len_N) 
+			if (BB.size() < len_N) 
 			{
 				// PAD(B)
 				cu.push_back(0);
-				cu.resize(len_N - B_out.size(), 0);
+				cu.resize(len_N - BB.size(), 0);
 			}
-			Conversion::append(cu, B_out);
+			Conversion::append(cu, BB);
 			
 			bytes uu = hash.hash(cu);
 			OsslConversion::bytes2bignum(uu, u);
@@ -299,7 +335,7 @@ namespace Ossl
 			#endif
 			
 			// Calculate M1 = H(H(N) XOR H(g) || H (s || A || B || K))
-			M1_out = calculateM1(username, salt, AA, B_out, K_out);
+			M1_out = calculateM1(username, salt, AA, BB, K_out);
 			
 			// Calculate M2 = H(A || M || K)
 			bytes toHashM2 = AA;
